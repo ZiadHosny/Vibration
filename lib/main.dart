@@ -19,7 +19,6 @@ class _MyAppState extends State<MyApp> {
   TextEditingController incrementController = TextEditingController();
   TextEditingController durationPerIterationController =
       TextEditingController();
-  TextEditingController waitingPerIterationController = TextEditingController();
 
   void start() {
     int? startFrequency = int.tryParse(startFrequencyController.text);
@@ -27,26 +26,28 @@ class _MyAppState extends State<MyApp> {
     int? iterationIncrement = int.tryParse(incrementController.text);
     int? durationPerIteration =
         int.tryParse(durationPerIterationController.text);
-    int? waitingPerIteration = int.tryParse(waitingPerIterationController.text);
 
     if (startFrequency != null &&
         endFrequency != null &&
         iterationIncrement != null &&
-        durationPerIteration != null &&
-        waitingPerIteration != null) {
+        durationPerIteration != null) {
+      List<int> pattern = [];
       int count = (endFrequency - startFrequency) ~/ iterationIncrement;
 
-      List<int> intensities = [];
-      List<int> pattern = [];
-
+      int frequency = startFrequency;
       for (var i = 0; i < count; i++) {
-        int secondFrequency = startFrequency! + iterationIncrement;
-        intensities.addAll([startFrequency, secondFrequency]);
-        pattern.addAll([waitingPerIteration, durationPerIteration]);
-        startFrequency = secondFrequency;
+        int currentFrequency = durationPerIteration ~/ frequency;
+        int count = (durationPerIteration ~/ currentFrequency) * 2;
+
+        for (int i = 0; i < count; ++i) {
+          pattern.add((i % 2 == 0) ? 1 : currentFrequency - 1);
+        }
+        frequency += iterationIncrement;
       }
 
-      Vibration.vibrate(pattern: pattern, intensities: intensities);
+      print(pattern);
+
+      Vibration.vibrate(pattern: pattern);
     } else {
       Fluttertoast.showToast(
           msg: "Please Fill all Inputs With numbers",
@@ -124,18 +125,6 @@ class _MyAppState extends State<MyApp> {
                     filled: true,
                     fillColor: Colors.white,
                     hintText: 'Enter Duration per iteration',
-                  ),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                TextField(
-                  keyboardType: TextInputType.number,
-                  controller: waitingPerIterationController,
-                  decoration: const InputDecoration(
-                    filled: true,
-                    fillColor: Colors.white,
-                    hintText: 'Enter Waiting per iteration',
                   ),
                 ),
                 const SizedBox(
