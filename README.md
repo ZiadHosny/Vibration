@@ -1,4 +1,4 @@
-# vibrator
+# vibration
 
 A new Flutter project.
 
